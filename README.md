@@ -48,8 +48,8 @@ Requires Node 20+. Environment variables are documented in [`.env.example`](.env
 1. **GitHub Pages:** Settings → Pages → Source: *GitHub Actions*.
 2. **Production secrets** (Settings → Secrets and variables → Actions):
    - `DOMAINESIA_FTP_SERVER`, `DOMAINESIA_FTP_USERNAME`, `DOMAINESIA_FTP_PASSWORD`
-   - Create a dedicated FTP account in cPanel restricted to `public_html`, not the main cPanel login.
-   - Optional variable `DOMAINESIA_FTP_DIR` (default `public_html/`).
+   - Create a dedicated FTP account in cPanel whose directory is `public_html`, not the main cPanel login.
+   - Optional variable `DOMAINESIA_FTP_DIR` (default `./`, i.e. the FTP account's own folder).
 3. **Email:** make sure the mailbox `info@redproject.id` exists in cPanel, and create
    `no-reply@redproject.id` (or a forwarder) so form mail passes SPF/DKIM.
 4. **DNS / SSL:** keep the domain on DomaiNesia; enable AutoSSL before the first deploy.

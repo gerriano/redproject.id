@@ -9,7 +9,7 @@ export const site = {
   description:
     'RED Project is a 360° digital consultancy from Indonesia. We help SMEs and national brands build websites, measure marketing and grow with data, from strategy to execution.',
   url: 'https://redproject.id',
-  email: 'info@redproject.id', // VERIFY: request mentioned info@redproject.com
+  email: 'info@redproject.id',
   whatsapp: {
     number: '6281290905733',
     display: '+62 812-9090-5733',

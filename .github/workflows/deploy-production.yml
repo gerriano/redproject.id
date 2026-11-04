@@ -3,10 +3,11 @@
 #
 # Required repository secrets (Settings -> Secrets and variables -> Actions):
 #   DOMAINESIA_FTP_SERVER     e.g. ftp.redproject.id  (from cPanel -> FTP Accounts)
-#   DOMAINESIA_FTP_USERNAME   a dedicated FTP account limited to public_html
+#   DOMAINESIA_FTP_USERNAME   a dedicated FTP account whose directory is public_html
 #   DOMAINESIA_FTP_PASSWORD
 # Optional repository variable:
-#   DOMAINESIA_FTP_DIR        remote folder, default "public_html/" (must end with /)
+#   DOMAINESIA_FTP_DIR        remote folder relative to the FTP login, default "./"
+#                             (use "public_html/" only if the FTP account starts in the home folder)
 name: Deploy production
 
 on:
@@ -53,7 +54,7 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: ./dist/
-          server-dir: ${{ vars.DOMAINESIA_FTP_DIR || 'public_html/' }}
+          server-dir: ${{ vars.DOMAINESIA_FTP_DIR || './' }}
           dangerous-clean-slate: false
       - name: Smoke test
         run: |

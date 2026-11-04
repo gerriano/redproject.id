@@ -15,4 +15,6 @@ export default defineConfig({
   compressHTML: true,
   image: { responsiveStyles: false },
   devToolbar: { enabled: false },
+  // Never inline assets (fonts) as data: URIs; the CSP allows fonts from 'self' only.
+  vite: { build: { assetsInlineLimit: 0 } },
 });

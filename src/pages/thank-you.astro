@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import Arrow from '../components/Arrow.astro';
+import { waLink } from '../data/site';
+import { url } from '../lib/url';
+---
+<Base title="Thank you" path="/thank-you/" noindex footerCta={false}>
+  <section class="simple">
+    <div class="container simple__inner">
+      <p class="eyebrow" data-hero-fade>Brief received</p>
+      <h1 class="display" aria-label="Thank you">
+        <span class="hero__line"><span class="hero__line-inner">Thank</span></span>
+        <span class="hero__line"><span class="hero__line-inner">you<span class="red">.</span></span></span>
+      </h1>
+      <p class="lead" data-hero-fade>Your message is in our inbox. We'll reply within one working day. If it's urgent, WhatsApp is the fastest way to reach us.</p>
+      <div class="simple__actions" data-hero-fade>
+        <a href={waLink()} class="btn btn--red" target="_blank" rel="noopener" data-magnetic>Chat on WhatsApp <Arrow /></a>
+        <a href={url('/')} class="btn btn--ghost">Back to home</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .simple { min-height: 80vh; display: grid; align-items: center; padding-top: calc(var(--header-h) + 60px); padding-bottom: var(--section); }
+  .simple__inner { display: grid; gap: 28px; }
+  .simple h1 :global(.hero__line) { display: block; overflow: hidden; }
+  .simple h1 :global(.hero__line-inner) { display: inline-block; }
+  .simple__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+</style>

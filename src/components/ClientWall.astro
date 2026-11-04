@@ -1,0 +1,40 @@
+---
+import { Image } from 'astro:assets';
+import { clients } from '../data/site';
+
+const logos = import.meta.glob<{ default: ImageMetadata }>('../assets/clients/*.png', { eager: true });
+const items = clients.map((c) => ({ ...c, src: logos[`../assets/clients/${c.file}.png`].default }));
+const half = Math.ceil(items.length / 2);
+const rows = [items.slice(0, half), items.slice(half)];
+---
+<section class="clients section--dark" aria-labelledby="clients-title">
+  <div class="container clients__head">
+    <p class="eyebrow">Trusted by</p>
+    <h2 class="h3" id="clients-title" data-split>Brands we've worked with.</h2>
+  </div>
+  <ul class="visually-hidden">
+    {items.map((c) => (<li>{c.name}</li>))}
+  </ul>
+  {rows.map((row, r) => (
+    <div class="marquee clients__row" aria-hidden="true" style={`--marquee-speed:${r ? 52 : 44}s`} data-direction={r ? 'reverse' : 'forward'}>
+      {[0, 1].map(() => (
+        <div class="marquee__track">
+          {row.map((c) => (
+            <span class="clients__logo"><Image src={c.src} alt="" width={180} height={173} /></span>
+          ))}
+        </div>
+      ))}
+    </div>
+  ))}
+</section>
+
+<style>
+  .clients { padding-block: var(--section); overflow: hidden; }
+  .clients__head { display: grid; gap: 20px; margin-bottom: clamp(40px, 5vw, 72px); }
+  .clients__row { border-top: 1px solid var(--rule-on-dark); }
+  .clients__row:last-of-type { border-bottom: 1px solid var(--rule-on-dark); }
+  .clients__row[data-direction='reverse'] .marquee__track { animation-direction: reverse; }
+  .clients__logo { display: grid; place-items: center; width: clamp(150px, 16vw, 230px); height: clamp(110px, 11vw, 150px); border-right: 1px solid var(--rule-on-dark); }
+  .clients__logo img { width: 62%; height: auto; max-height: 72%; object-fit: contain; opacity: 0.78; transition: opacity 0.3s; }
+  .clients__logo:hover img { opacity: 1; }
+</style>

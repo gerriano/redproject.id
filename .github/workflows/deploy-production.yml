@@ -1,0 +1,66 @@
+# Production deploy to DomaiNesia (redproject.id) over FTPS.
+# Runs only when started by hand (Actions -> "Deploy production" -> Run workflow).
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   DOMAINESIA_FTP_SERVER     e.g. ftp.redproject.id  (from cPanel -> FTP Accounts)
+#   DOMAINESIA_FTP_USERNAME   a dedicated FTP account limited to public_html
+#   DOMAINESIA_FTP_PASSWORD
+# Optional repository variable:
+#   DOMAINESIA_FTP_DIR        remote folder, default "public_html/" (must end with /)
+name: Deploy production
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "deploy" to publish main to https://redproject.id'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event.inputs.confirm == 'deploy' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://redproject.id
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          SITE_URL: https://redproject.id
+          BASE_PATH: /
+          PUBLIC_FORM_MODE: live
+      - name: Lint contact endpoint
+        run: php -l dist/api/contact.php
+      - name: Upload over FTPS
+        uses: SamKirkland/FTP-Deploy-Action@8e83cea8672e3fbcbb9fdafff34debf6ae4c5f65 # v4.3.5
+        with:
+          server: ${{ secrets.DOMAINESIA_FTP_SERVER }}
+          username: ${{ secrets.DOMAINESIA_FTP_USERNAME }}
+          password: ${{ secrets.DOMAINESIA_FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./dist/
+          server-dir: ${{ vars.DOMAINESIA_FTP_DIR || 'public_html/' }}
+          dangerous-clean-slate: false
+      - name: Smoke test
+        run: |
+          sleep 5
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://redproject.id/)
+          echo "Home returned $code"
+          test "$code" = "200"
+          curl -s https://redproject.id/ | grep -q 'Digital Advisory' || (echo "Unexpected homepage content" && exit 1)
+          wp=$(curl -s -o /dev/null -w '%{http_code}' https://redproject.id/wp-login.php)
+          echo "wp-login.php returned $wp (expected 410)"

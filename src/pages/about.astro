@@ -1,0 +1,102 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Stats from '../components/Stats.astro';
+import ClientWall from '../components/ClientWall.astro';
+import { values, pillars } from '../data/site';
+import heroAbout from '../assets/hero/hero-about-us.jpg';
+---
+<Base
+  title="About"
+  path="/about/"
+  description="RED Project is a data-driven, customer-centric digital consultancy with 10+ years of experience helping Indonesian businesses and international brands grow."
+>
+  <PageHero
+    eyebrow="About RED Project"
+    title="We are RED Project"
+    lead="A digital consultancy with more than ten years of experience, working with everyone from SMEs to international brands."
+    image={heroAbout}
+  />
+
+  <section class="section story">
+    <div class="container story__grid">
+      <p class="eyebrow">Our position</p>
+      <div class="story__body">
+        <p class="h3" data-split>Most businesses don't need another agency. They need someone who looks at the whole picture, tells them the truth about it, and then helps them act.</p>
+        <div class="story__cols" data-reveal>
+          <div>
+            <h2 class="mono muted">The challenge</h2>
+            <p>Running a consistent, data-driven presence across a website, social channels, ads and CRM is hard. Platforms change, algorithms shift and customer behaviour moves faster than most teams can follow. Digital work often gets done in pieces, by different vendors, without a plan for the long term, and with no clear way to see what it returns.</p>
+          </div>
+          <div>
+            <h2 class="mono muted">Our approach</h2>
+            <p>We combine strategy, design and data. We design websites and digital products customers enjoy using, and run marketing that is measured across every channel. Every recommendation starts from your data and your customers, so what we build has real impact on your business, whatever its size.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section--dark principles">
+    <div class="container principles__grid">
+      {pillars.map((p, i) => (
+        <article class="principle" data-reveal>
+          <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+          <h2>{p.title}<span class="red">.</span></h2>
+          <p>{p.body}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <Stats />
+
+  <section class="section values">
+    <div class="container values__grid">
+      <div class="values__head">
+        <p class="eyebrow">How we do business</p>
+        <h2 class="h2" data-split>What you can expect from us.</h2>
+      </div>
+      <ul class="values__list" role="list">
+        {values.map((v) => (
+          <li data-reveal>
+            <h3>{v.title}</h3>
+            <p class="muted">{v.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <ClientWall />
+</Base>
+
+<style>
+  .story__grid { display: grid; grid-template-columns: 1fr 3fr; gap: clamp(24px, 5vw, 96px); }
+  .story__body { display: grid; gap: clamp(40px, 5vw, 72px); }
+  .story__body .h3 { font-size: var(--step-3); line-height: 1.05; letter-spacing: -0.035em; max-width: 24ch; }
+  .story__cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 4vw, 64px); }
+  .story__cols h2 { margin-bottom: 14px; font-weight: 400; }
+  .story__cols p { max-width: 56ch; }
+
+  .principles { padding-block: clamp(56px, 8vw, 120px); }
+  .principles__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .principle { display: grid; gap: 16px; align-content: start; padding: 8px 28px 8px 0; }
+  .principle + .principle { padding-left: 28px; border-left: 1px solid var(--rule-on-dark); }
+  .principle .mono { color: var(--muted-on-dark); }
+  .principle h2 { font-weight: 800; font-size: var(--step-3); letter-spacing: -0.04em; text-transform: uppercase; line-height: 0.95; }
+  .principle p { color: var(--muted-on-dark); max-width: 40ch; }
+
+  .values { background: var(--paper-2); }
+  .values__grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: clamp(40px, 6vw, 120px); }
+  .values__head { display: grid; gap: 24px; align-content: start; }
+  .values__list { border-top: 1px solid var(--ink); }
+  .values__list li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--rule); }
+  .values__list h3 { font-size: var(--step-1); font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
+
+  @media (max-width: 860px) {
+    .story__grid, .values__grid, .story__cols, .principles__grid { grid-template-columns: 1fr; }
+    .principle + .principle { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule-on-dark); padding-top: 28px; margin-top: 20px; }
+    .values__list li { grid-template-columns: 1fr; gap: 6px; }
+  }
+</style>

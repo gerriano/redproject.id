@@ -1,0 +1,70 @@
+# redproject.id — static site hardening for DomaiNesia (Apache/LiteSpeed).
+# The site is static HTML. The only executable file allowed is /api/contact.php
+# (re-enabled in /api/.htaccess). Everything else that could execute is refused.
+
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+AddDefaultCharset utf-8
+
+# ---- Block execution and sensitive files everywhere ---------------------------------
+<FilesMatch "\.(php[0-9]?|phtml|phar|pht|pl|py|cgi|sh|asp|aspx|jsp)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "(^\.|\.(ini|log|sql|bak|old|orig|swp|zip|tar|gz|env|yml|yaml|md|lock)$)">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Force HTTPS on the apex domain (keep ACME challenges reachable for AutoSSL).
+  RewriteCond %{REQUEST_URI} !^/\.well-known/
+  RewriteCond %{HTTPS} !=on [OR]
+  RewriteCond %{HTTP_HOST} ^www\. [NC]
+  RewriteRule ^ https://redproject.id%{REQUEST_URI} [L,R=301]
+
+  # Old WordPress URLs -> new pages (keeps inbound links and search results working).
+  RewriteRule ^about-us/?$ /about/ [L,R=301]
+  RewriteRule ^stories/?$ / [L,R=301]
+  RewriteRule ^(digitalmarketing|digitaltransformation|category|tag|author)(/.*)?$ / [L,R=301]
+  RewriteRule ^feed/?$ / [L,R=301]
+
+  # WordPress is gone for good: answer bot probes with 410 instead of serving anything.
+  RewriteRule ^(wp-admin|wp-content|wp-includes)(/.*)?$ - [G,L]
+  RewriteRule ^(wp-login|xmlrpc|wp-cron|wp-config|wp-signup|wp-trackback)\.php$ - [G,L]
+</IfModule>
+
+# ---- Security headers ---------------------------------------------------------------
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+  Header always set Strict-Transport-Security "max-age=31536000"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; frame-src https://www.googletagmanager.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+
+  # HTML is always revalidated so deploys show up immediately.
+  <FilesMatch "\.(html|xml|txt|webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+# ---- Compression and caching --------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json application/xml image/svg+xml application/manifest+json
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/x-icon "access plus 1 month"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType application/pdf "access plus 1 week"
+</IfModule>
+
+AddType application/manifest+json .webmanifest
+AddType font/woff2 .woff2

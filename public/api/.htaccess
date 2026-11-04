@@ -1,0 +1,11 @@
+# Only the contact endpoint may execute in this folder. Nothing else is served from /api/.
+Options -Indexes
+<FilesMatch ".*">
+  Require all denied
+</FilesMatch>
+<Files "contact.php">
+  Require all granted
+</Files>
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex"
+</IfModule>

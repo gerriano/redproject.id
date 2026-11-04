@@ -1,0 +1,89 @@
+---
+import '@fontsource-variable/plus-jakarta-sans';
+import '@fontsource/jetbrains-mono/400.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+  path?: string;
+  noindex?: boolean;
+  footerCta?: boolean;
+}
+
+const { title, description = site.description, path = '/', noindex = false, footerCta = true } = Astro.props;
+const fullTitle = title ? `${title} | ${site.name}` : `${site.name} | Digital Advisory 360° in Indonesia`;
+const canonical = new URL(path, site.url).toString();
+const ogImage = new URL('/og.png', site.url).toString();
+const gtm = import.meta.env.PUBLIC_GTM_ID;
+const isProduction = Astro.site?.hostname === 'redproject.id';
+
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: site.name,
+  url: site.url,
+  logo: new URL('/icon-512.png', site.url).toString(),
+  image: ogImage,
+  description: site.description,
+  email: site.email,
+  telephone: `+${site.whatsapp.number}`,
+  areaServed: 'ID',
+  address: { '@type': 'PostalAddress', addressCountry: 'ID' },
+  sameAs: site.social.map((s) => s.href),
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {(noindex || !isProduction) && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#141414" />
+    <link rel="icon" href={url('/favicon.ico')} sizes="any" />
+    <link rel="icon" href={url('/favicon-32.png')} type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
+    <link rel="manifest" href={url('/site.webmanifest')} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <slot name="head" />
+    <script is:inline>document.documentElement.classList.add('js');setTimeout(function(){if(!window.__motionReady)document.documentElement.classList.remove('js')},2500);</script>
+    <script type="application/ld+json" set:html={JSON.stringify(orgLd)} />
+
+    {gtm && (
+      <script is:inline define:vars={{ gtm }}>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',gtm);
+      </script>
+    )}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer cta={footerCta} />
+    <div class="cursor" aria-hidden="true"></div>
+    <script>
+      import { initMotion } from '../scripts/motion';
+      initMotion();
+    </script>
+  </body>
+</html>

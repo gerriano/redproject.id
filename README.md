@@ -58,7 +58,7 @@ Requires Node 20+. Environment variables are documented in [`.env.example`](.env
 
 - [ ] `https://redproject.id` loads, `http://` and `www.` redirect to it
 - [ ] `/about-us/` → `/about/` (301); old article URLs → `/` (301)
-- [ ] `/wp-login.php` returns 410
+- [ ] `/wp-admin/` returns 410 and `/wp-login.php` returns 403 or 410
 - [ ] `/api/contact.php` in a browser returns *Method not allowed*; any other `.php` returns 403
 - [ ] A real form submission arrives in `info@redproject.id` (check spam on the first try)
 - [ ] Google Search Console: submit `https://redproject.id/sitemap.xml`, check *Security issues*

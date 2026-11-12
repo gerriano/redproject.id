@@ -19,7 +19,6 @@ const { title, description = site.description, path = '/', noindex = false, foot
 const fullTitle = title ? `${title} | ${site.name}` : `${site.name} | Digital Advisory 360° in Indonesia`;
 const canonical = new URL(path, site.url).toString();
 const ogImage = new URL('/og.png', site.url).toString();
-const gtm = import.meta.env.PUBLIC_GTM_ID;
 const isProduction = Astro.site?.hostname === 'redproject.id';
 
 const orgLd = {
@@ -40,6 +39,8 @@ const orgLd = {
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Google Tag Manager (GTM-K54X9Q7C): keep first in <head>. Every page uses this layout, so new pages inherit it. -->
+    <script is:inline>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-K54X9Q7C');</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
@@ -66,14 +67,9 @@ const orgLd = {
     <slot name="head" />
     <script is:inline>document.documentElement.classList.add('js');setTimeout(function(){if(!window.__motionReady)document.documentElement.classList.remove('js')},2500);</script>
     <script type="application/ld+json" set:html={JSON.stringify(orgLd)} />
-
-    {gtm && (
-      <script is:inline define:vars={{ gtm }}>
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',gtm);
-      </script>
-    )}
   </head>
   <body>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K54X9Q7C" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a class="skip-link" href="#main">Skip to content</a>
     <Header />
     <main id="main">
